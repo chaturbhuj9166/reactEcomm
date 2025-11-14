@@ -11,13 +11,18 @@ import Home from "../pages/Home";
 import ProtectedRoute from "../components/ProtectedRoute";
 import CartProvider from "../context/CartProvider";
 import AuthProvider from "../context/AuthProvider";
+import CurrencyProvider from "../context/CurrencyProvider";
 
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <OutletComponent />,
+    element: ( 
+    <CurrencyProvider>
+    <OutletComponent />
+    </CurrencyProvider>
+    ),
     children: [
       {
         index: true,
@@ -27,11 +32,10 @@ const router = createBrowserRouter([
         path: "/cart",
         element: <Cart />,
       },
+
    
-      // {
-      //   path: "/wishlist",
-      //   element: <Wishlist />,
-      // },
+      
+      
       {
         path: "/about",
         element: <About />,

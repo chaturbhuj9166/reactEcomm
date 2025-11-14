@@ -8,7 +8,7 @@ function OutletComponent() {
       <Header />
       <Outlet />
       <Footer />
-    </>
+    </> 
   );
 }
 

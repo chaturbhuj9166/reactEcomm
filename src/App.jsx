@@ -11,6 +11,7 @@ const App = () => {
           <li>Contecat</li>
         </ul>
       </nav>
+      <ExchangeRate />
     </div>
   )
 }

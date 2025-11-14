@@ -11,7 +11,7 @@ function AuthProvider({ children }) {
       const response = await instance.get("/auth/authCheck", {
         withCredentials: true,
       });
-      // console.log(response.data);
+      console.log(response.data);
       setIsLoggedIn(true);
       return true;
     } catch (error) {

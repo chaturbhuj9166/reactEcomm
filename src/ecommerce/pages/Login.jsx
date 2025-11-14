@@ -76,7 +76,7 @@ function Login() {
           </div>
         </form>
         <p>
-          New User? <Link to="/register">Register Here</Link>
+      <Link to="/Register">Register Here</Link>
         </p>
       </div>
     </div>
