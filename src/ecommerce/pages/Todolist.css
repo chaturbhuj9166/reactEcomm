@@ -1,0 +1,83 @@
+/* Page Center */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  background: #f7f7f7;
+}
+
+/* Main Container */
+form {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 40px;
+  flex-direction: column;
+}
+
+input {
+  width:70%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  font-size: 16px;
+  outline: none;
+  transition: 0.2s;
+}
+
+input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 5px rgba(79, 70, 229, 0.3);
+}
+
+button {
+    width: 250px;
+  padding: 10px 16px;
+  background: #4f46e5;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #3a33c4;
+}
+
+/* Task List */
+ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 25px;
+  width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+li {
+  background: white;
+  margin-bottom: 10px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #e3e3e3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 17px;
+}
+
+/* Delete Button (X) */
+li span {
+  color: #e11d48;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.2s;
+}
+
+li span:hover {
+  color: #be123c;
+  transform: scale(1.2);
+}

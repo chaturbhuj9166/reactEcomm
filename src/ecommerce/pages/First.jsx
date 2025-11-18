@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-import instance from "../config/axiosConfig.js";
+import { useEffect, useState,useCurrency } from "react";
 import { Link } from "react-router-dom";
-import { useCurrency } from "../context/CurrencyProvider";
-import "./First.css"
+import { useCurrency } from "../context/CurrencyProvider.jsx";
+
 
 
 

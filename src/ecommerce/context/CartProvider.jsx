@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from "react";
 
 const cartContext = createContext();
 
-function CartProvider({ children }) {
+function CartProvider({ children }) { 
   const [cart, setCart] = useState(
     localStorage.getItem("storedCart") !== null
       ? JSON.parse(localStorage.getItem("storedCart"))

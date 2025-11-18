@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useCart } from "../context/CartProvider";
-import {useCurrency} from "../context/CurrencyProvider"
+import {useCurrency} from "./ecommerce/context/CurrencyProvider";
 import "./Cart.css"
 
 
