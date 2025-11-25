@@ -3,9 +3,10 @@ import { useCart } from "../context/CartProvider";
 import { useAuth } from "../context/AuthProvider";
 import { useCurrency } from "../context/CurrencyProvider";
 
+
 function Header() {
     const { cart } = useCart();
-    const { isLoggedIn, logout } = useAuth();
+    const { isLoggedIn, user, Logout } = useAuth();
     const { currency, setCurrency } = useCurrency();
 
     return (
@@ -26,7 +27,12 @@ function Header() {
 
                     <li>
                         {isLoggedIn ? (
-                            <button onClick={logout}>Logout</button>
+                            <>
+                                {user && user.displayName && (
+                                    <span style={{ marginRight: '8px' }}>Hi, {user.displayName}</span>
+                                )}
+                                <button onClick={Logout}>Logout</button>
+                            </>
                         ) : (
                             <NavLink to="/login">Login</NavLink>
                         )}

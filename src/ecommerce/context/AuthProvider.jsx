@@ -1,61 +1,51 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { authentication } from "../pages/Firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import instance from "../config/axiosConfig";
 
 const authContext = createContext();
-
-function AuthProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(null); 
-
-  async function isUserLoggedIn() {
-    try {
-      const response = await instance.get("/auth/authCheck", {
-        withCredentials: true,
-      });
-      console.log(response.data);
-      setIsLoggedIn(true);
-      return true;
-    } catch (error) {
-      setIsLoggedIn(false);
-      return false;
-    }
-  }
-
-  const checkAuthStatus = isUserLoggedIn;
-
-  function loginSuccess() {
-    setIsLoggedIn(true);
-  }
-
-  async function Logout() {
-    try {
-      await instance.post("/auth/logout", {}, { withCredentials: true });
-      setIsLoggedIn(false);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  useEffect(() => {
-    isUserLoggedIn();
-  }, []);
-
-  return (
-    <authContext.Provider
-      value={{
-        isLoggedIn,
-        isUserLoggedIn,
-        checkAuthStatus,
-        loginSuccess,
-        Logout,
-      }}
-    >
-      {children}
-    </authContext.Provider>
-  );
-}
 
 export function useAuth() {
   return useContext(authContext);
 }
 
-export default AuthProvider;
+export default function AuthProvider({ children }) {
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [user, setUser] = useState(null);
+
+  function loginSuccess(userObj = null) {
+    setIsLoggedIn(true);
+    setUser(userObj);
+  }
+
+  async function Logout() {
+    try { await signOut(authentication); } catch {}
+    try { await instance.post("/auth/logout", {}, { withCredentials: true }); } catch {}
+    setIsLoggedIn(false);
+    setUser(null);
+  }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(authentication, (userObj) => {
+      if (userObj) {
+        setIsLoggedIn(true);
+        setUser({
+          displayName: userObj.displayName,
+          email: userObj.email,
+          uid: userObj.uid,
+        });
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <authContext.Provider value={{ isLoggedIn, user, loginSuccess, Logout }}>
+      {children}
+    </authContext.Provider>
+  );
+}

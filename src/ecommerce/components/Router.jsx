@@ -9,55 +9,46 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Home from "../pages/Home";
 import ProtectedRoute from "../components/ProtectedRoute";
+
 import CartProvider from "../context/CartProvider";
 import AuthProvider from "../context/AuthProvider";
 import CurrencyProvider from "../context/CurrencyProvider";
 
-
-
 const router = createBrowserRouter([
   {
     path: "/",
-    element: ( 
-    <CurrencyProvider>
-    <OutletComponent />
-    </CurrencyProvider>
-    ),
+    element: <OutletComponent />,
     children: [
       {
         index: true,
         element: <First />,
       },
       {
-        path: "/cart",
+        path: "cart",
         element: <Cart />,
       },
-
-   
-      
-      
       {
-        path: "/about",
+        path: "about",
         element: <About />,
       },
       {
-        path: "/login",
+        path: "login",
         element: <Login />,
       },
       {
-        path: "/register",
+        path: "register",
         element: <Register />,
       },
       {
-        path: "/shop",
+        path: "shop",
         element: <First />,
       },
       {
-        path: "/product/:id",
+        path: "product/:id",
         element: <SingleProduct />,
       },
       {
-        path: "/home",
+        path: "home",
         element: (
           <ProtectedRoute>
             <Home />
@@ -68,14 +59,16 @@ const router = createBrowserRouter([
   },
 ]);
 
-function Router() {
+function AppRouter() {
   return (
     <AuthProvider>
       <CartProvider>
-        <RouterProvider router={router} />
+        <CurrencyProvider>
+          <RouterProvider router={router} />
+        </CurrencyProvider>
       </CartProvider>
     </AuthProvider>
   );
 }
 
-export default Router;
+export default AppRouter;
