@@ -1,70 +1,76 @@
-import { createContext, useContext, useEffect, useState, useRef } from "react";
+// src/contexts/CartProvider.jsx
+import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useAuth } from "./AuthProvider";
-import { db, doc, setDoc, onSnapshot } from "../pages/Firebase.js";
+import { db } from "../pages/Firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 const cartContext = createContext();
+
+const localStorageCart = () => {
+  const stored = localStorage.getItem("storedCart");
+  try {
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+const initialState = {
+  cart: localStorageCart(),
+};
+
+function cartReducer(state, action) {
+  switch (action.type) {
+    case "SET_CART":
+      return { ...state, cart: action.payload };
+    default:
+      return state;
+  }
+}
 
 export function useCart() {
   return useContext(cartContext);
 }
 
-export default function CartProvider({ children }) {
-  const { user } = useAuth();
-  const [cart, setCart] = useState(() => {
-    const stored = localStorage.getItem("storedCart");
-    return stored ? JSON.parse(stored) : [];
-  });
-
-  const skipSaveRef = useRef(true);
+function CartProvider({ children }) {
+  const [state, dispatch] = useReducer(cartReducer, initialState);
+  const { firebaseUser } = useAuth();
 
   useEffect(() => {
-    if (!user || !user.uid) {
-      skipSaveRef.current = false;
-      return;
-    }
+    localStorage.setItem("storedCart", JSON.stringify(state.cart));
+  }, [state.cart]);
 
-    const cartRef = doc(db, "carts", user.uid);
-
-    const unsubscribe = onSnapshot(cartRef, (snap) => {
-      if (snap.exists()) {
-        const serverItems = snap.data().items || [];
-        // Firestore से load करते समय quantity default set करना
-const itemsWithQty = serverItems.map(item => ({
-  ...item,
-  quantity: item.quantity ?? 1   // अगर undefined हो तो 1 set करो
-}));
-setCart(itemsWithQty);
-
-      } else {
-        setCart([]);
-      }
-      skipSaveRef.current = false;
-    });
-
-    return () => unsubscribe();
-  }, [user]);
-
+  // Sync to Firestore per-user
   useEffect(() => {
-    localStorage.setItem("storedCart", JSON.stringify(cart));
-
-    const saveCart = async () => {
-      if (!user || !user.uid) return;
-      if (skipSaveRef.current) return;
-
+    async function syncToFirestore() {
+      if (!firebaseUser) return;
       try {
-        const cartRef = doc(db, "carts", user.uid);
-        await setDoc(cartRef, { items: cart });
+        for (const item of state.cart) {
+          await setDoc(doc(db, "user_cart", `${firebaseUser.uid}_${item._id}`), {
+            ...item,
+            userId: firebaseUser.uid,
+            updatedAt: new Date(),
+          });
+        }
       } catch (err) {
-        console.error("Error saving cart:", err);
+        console.log("Cart sync failed:", err);
       }
-    };
+    }
+    syncToFirestore();
+  }, [state.cart, firebaseUser]);
 
-    saveCart();
-  }, [cart, user]);
+  const setCart = (payload) => dispatch({ type: "SET_CART", payload });
 
   return (
-    <cartContext.Provider value={{ cart, setCart }}>
+    <cartContext.Provider
+      value={{
+        cart: state.cart,
+        setCart,
+      }}
+    >
       {children}
     </cartContext.Provider>
   );
 }
+
+export default CartProvider;
